@@ -1,11 +1,16 @@
-from flask import Flask, url_for
+from flask import *
 
 app = Flask(__name__)
 
 
+@app.route('/')
+def index():
+    return 'index page'
+
+
 @app.route('/<path:url>')
 def name(url):
-    return 'Url: {}'.format(url)
+    return render_template('hello.html', name=url)
 
 
 @app.route('/about')
@@ -18,11 +23,25 @@ def error404():
     return '404'
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/success/<name>')
+def success(name):
+    return 'welcome %s' % name
+
+
+@app.route('/login')
+def loginpage():
+    return render_template('login.html')
+
+
+@app.route('/login', methods=['POST', 'GET'])
 def login():
-    pass
+    if request.method == 'POST':
+        user = request.form['nm']
+        return redirect(url_for('success', name=user))
+    else:
+        user = request.args.get('nm')
+        return redirect(url_for('success', name=user))
 
 
 if __name__ == '__main__':
-    app.debug = True
     app.run()
