@@ -44,9 +44,7 @@
     </script>
 </head>
 <body>
-    <h1>Flask-SocketIO Test</h1>
-    <p>Async mode is: <b>{{ async_mode }}</b></p>
-    <h2>Send:</h2>
+    <h1>{{ name }}</h1>
     <form id="emit" method="POST" action='#'>
         <textarea type="text" cols="120" rows="30" name="emit_data" id="emit_data" placeholder="Message">{{ data }}</textarea>
         <input type="submit" value="Echo">
