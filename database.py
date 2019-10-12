@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 client = MongoClient("mongodb://root:12345678@34.68.79.134:27017")
 db = client['note']
@@ -16,7 +18,7 @@ print(result)
 
 def database(data, name):
     print("hello")
-    fo = open('static/' + name, 'w')
+    fo = open('static/html/' + name, 'w')
     fo.write(data)
     fo.close()
 

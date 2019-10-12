@@ -8,6 +8,15 @@
     {% endif %}
     <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+    <script>
+        window.addEventListener("keydown", function(e) {
+            if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+                e.preventDefault();
+                // Process event...
+                document.getElementById("test").innerHTML = "ctrl+s成功";
+            }
+        }, false);
+    </script>
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
             namespace = '/test';
@@ -39,7 +48,7 @@
     <p>Async mode is: <b>{{ async_mode }}</b></p>
     <h2>Send:</h2>
     <form id="emit" method="POST" action='#'>
-        <textarea type="text" cols="120" rows="30" name="emit_data" id="emit_data" placeholder="Message"></textarea>
+        <textarea type="text" cols="120" rows="30" name="emit_data" id="emit_data" placeholder="Message">{{ data }}</textarea>
         <input type="submit" value="Echo">
     </form>
     <h2>Receive:</h2>

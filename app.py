@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/env python
+import random
 from threading import Lock
+from flask import *
 from flask import Flask, render_template, session, request, \
     copy_current_request_context
-from flask_socketio import SocketIO, emit, join_room, leave_room, \
-    close_room, rooms, disconnect
+from flask_socketio import SocketIO, emit, disconnect
 from database import database
+import os
 
 
 # Set this variable to "threading", "eventlet" or "gevent" to test the
@@ -32,19 +35,26 @@ def background_thread():
 
 @app.route('/')
 def index():
-    return render_template('index.html', async_mode=socketio.async_mode)
+    a = str(random.randint(0, 10000))
+    return redirect(a)
 
 
 @app.route('/<name>')
 def notepage(name):
-    return render_template('index.html', name=name)
+    a = os.listdir("static")
+    if name in a:
+        fo = open("static/html/"+name, "r")
+        data = fo.read()
+        fo.close()
+        return render_template('index.html', name=name, data=data)
+    else:
+        return render_template('index.html', name=name)
 
 
 @socketio.on('my_event', namespace='/test')
 def test_message(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
     database(message['data'], message['name'])
-    print(message['data'], message['name'])
     emit('my_response',
          {'data': message['data'], 'count': session['receive_count']})
 
