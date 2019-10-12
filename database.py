@@ -1,18 +1,24 @@
-import pymysql
+"""
+client = MongoClient("mongodb://root:12345678@34.68.79.134:27017")
+db = client['note']
+collection = db.col
 
-# 打开数据库连接
-db = pymysql.connect("localhost", "root", "12345678", "note")
+student = {
+    'id': '20170101',
+    'name': 'Jordan',
+    'age': 20,
+    'gender': 'male'
+}
 
-# 使用 cursor() 方法创建一个游标对象 cursor
-cursor = db.cursor()
+result = collection.insert_one(student)
+print(result)
+"""
 
-# 使用 execute()  方法执行 SQL 查询
-cursor.execute("SELECT VERSION()")
+def database(data, name):
+    print("hello")
+    fo = open('static/' + name, 'w')
+    fo.write(data)
+    fo.close()
 
-# 使用 fetchone() 方法获取单条数据.
-data = cursor.fetchone()
-
-print("Database version : %s " % data)
-
-# 关闭数据库连接
-db.close()
+if __name__ == '__main__':
+    database("hello", 'hello')
