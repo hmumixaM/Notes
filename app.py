@@ -64,9 +64,9 @@ def notepage(name):
             return render_template('pwd.html', name=name)
         else:
             if 'path' in a.keys():
-                return render_template('index.html', name=a['name'], data=a['data'], path=a['path'])
+                return render_template('index.html', name=a['name'], time=a['time'], data=a['data'], path=a['path'])
             else:
-                return render_template('index.html', name=a['name'], data=a['data'])
+                return render_template('index.html', name=a['name'], time=a['time'], data=a['data'])
     else:
         return render_template('index.html', name=name)
 

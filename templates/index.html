@@ -65,6 +65,12 @@
     {% else %}
         <a href="upload/{{ name }}">Upload your file</a>
     {% endif %}
+
+    {% if time %}
+        <h3>Last edited on: {{ time }}</h3>
+    {% else %}
+        <h3>New document</h3>
+    {% endif %}
     <h2>Receive:</h2>
     <div id="log"></div>
 
