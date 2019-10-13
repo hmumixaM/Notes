@@ -40,8 +40,13 @@ def upload(name):
         f = request.files['file']
         filename = secure_filename(f.filename)
         f.save('static/file/'+filename)
-        file_path(name, filename)
-        return redirect('/'+filename)
+        ans = find(name)
+        if ans:
+            file_path(name, filename)
+        else:
+            add(name, '')
+            file_path(name, filename)
+        return redirect('/'+name)
     return render_template('file.html', name=name)
 
 
@@ -55,11 +60,11 @@ def index():
 def notepage(name):
     a = find(name)
     if a:
-        if a['password']:
+        if 'password' in a.keys():
             return render_template('pwd.html', name=name)
         else:
-            if a['path']:
-                return render_template('index.html', name=a['name'], data=a['data'], path=['path'])
+            if 'path' in a.keys():
+                return render_template('index.html', name=a['name'], data=a['data'], path=a['path'])
             else:
                 return render_template('index.html', name=a['name'], data=a['data'])
     else:
@@ -77,7 +82,10 @@ def verify():
     if request.method == 'POST':
         a = find(request.form['name'])
         if a['password'] == request.form['password']:
-            return render_template('index.html', name=a['name'], data=a['data'])
+            if a['path']:
+                return render_template('index.html', name=a['name'], data=a['data'], path=a['path'])
+            else:
+                return render_template('index.html', name=a['name'], data=a['data'])
         else:
             return redirect('/' + request.form['name'])
     else:

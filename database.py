@@ -40,5 +40,5 @@ def file_path(name, path):
     return collection.update(condition, ans)
 
 if __name__ == '__main__':
-    a = find('hello')
+    a = find('8293784982368')
     print(a)
