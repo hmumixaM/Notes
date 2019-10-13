@@ -6,17 +6,11 @@
     {% else %}
         <title>Welcome to the notebook!</title>
     {% endif %}
-    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/main.css">
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
-    <script>
-    window.addEventListener("keydown", function(e) {
-        if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
-            e.preventDefault();
-            // Process event...
-            document.getElementById("test").innerHTML = "ctrl+s成功";
-        }
-    }, false);
-    </script>
     <script>
         window.addEventListener("keydown", function(e) {
             if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
@@ -41,6 +35,7 @@
 
             $('form#pwd').submit(function(event) {
                 socket.emit('password', {data: $('#passd').val(), name: document.title});
+                alert('Password has been set!');
                 return false;
             });
 
@@ -48,22 +43,44 @@
                 socket.emit('my_event', {data: $('#emit_data').val(), name: document.title});
                 return false;
             });
+
+            document.getElementById('counter').innerHTML = document.getElementById('emit_data').value.length;
         });
 
     </script>
+    <script language="javascript">
+    function countChar(textareaName,spanName)
+    {
+     document.getElementById(spanName).innerHTML = document.getElementById(textareaName).value.length;
+    }
+    </script>
 </head>
+
+
 <body>
-    <h1>{{ name }}</h1>
-    <textarea type="text" cols="120" rows="30" name="emit_data" id="emit_data" placeholder="Message">{{ data }}</textarea>
-    <br><br>
+    <div class="page-header">
+    <h1> {{ name }}
+        <small> Your online anonymous notebook. </small>
+    </h1>
+    </div>
+
+    <div><textarea style="background-color: #fcfdf8" type="text" rows="15" name="emit_data" id="emit_data" oninput="countChar('emit_data', 'counter')" placeholder="Message">{{ data }}</textarea><div>
+
+    <br>
+    <br>
+
     <form id="pwd" method="POST" action='#'>
         <input type="password" name="pass" id="passd">
-        <input type="submit" value="Set a password">
+        <input type="submit" value="Set a password" class="btn btn-primary">
     </form>
+
+    <br>
+    <br>
+
     {% if path %}
-        <a href="{{ name }}/file"> {{ path }}</a>
+        <button onclick="window.location.href='{{ name }}/file'" class="btn btn-primary">Download: {{ path }}</button>
     {% else %}
-        <a href="upload/{{ name }}">Upload your file</a>
+        <button onclick="window.location.href='upload/{{ name }}'" class="btn btn-success">Upload your file</button>
     {% endif %}
 
     {% if time %}
@@ -71,10 +88,12 @@
     {% else %}
         <h3>New document</h3>
     {% endif %}
-    <h2>Receive:</h2>
-    <div id="log"></div>
 
+    <h3>Word Count: <span id="counter"></span></h3>
 
+<br>
+<br>
+<br>
 
 </body>
 </html>

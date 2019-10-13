@@ -1,0 +1,27 @@
+textarea {
+    display: block;
+    width: 80%;
+    overflow: hidden;
+    padding: 5px 10px;
+    margin: 30px auto 0;
+    resize: none;
+    line-height: 24px;
+    font-size: 16px;
+    color: #666;
+    border: 1px solid #ccc;
+    outline: 0 none;
+    box-shadow: 0 0 5px #999;
+    border-radius: 3px;
+    box-sizing: border-box;
+    transition: all 200ms linear;
+}
+
+textarea:focus {
+    color: #277fe4;
+    border-color: #2196f3;
+    box-shadow: 0 0 5px #03a9f4;
+}
+
+div { text-align: center; }
+
+body {background-color: #fcfdf8;}

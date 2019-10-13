@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 import pymongo
 import time
-import bson.binary
-from io import StringIO
-
 
 client = pymongo.MongoClient(host='127.0.0.1', port=27017)
 db = client.note
 collection = db.col
-
 
 def add(name, data):
     ans = find(name)
@@ -29,7 +25,12 @@ def find(name):
 def pwd(name, password):
     condition = {'name': name}
     ans = collection.find_one(condition)
-    ans['password'] = password
+    if ans:
+        ans['password'] = password
+    else:
+        add(name, '')
+        ans = collection.find_one(condition)
+        ans['password'] = password
     return collection.update(condition, ans)
 
 
@@ -40,5 +41,5 @@ def file_path(name, path):
     return collection.update(condition, ans)
 
 if __name__ == '__main__':
-    a = find('8293784982368')
+    a = pwd('12412', 'dsafsa')
     print(a)

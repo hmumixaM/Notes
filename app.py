@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
-import random
 from threading import Lock
 from flask import *
 from flask import Flask, render_template, session, request, \
     copy_current_request_context
 from flask_socketio import SocketIO, emit, disconnect
 from database import *
-import os
 from werkzeug.utils import secure_filename
+from random_words import RandomWords
 
 
 # Set this variable to "threading", "eventlet" or "gevent" to test the
@@ -52,8 +51,8 @@ def upload(name):
 
 @app.route('/')
 def index():
-    a = str(random.randint(0, 10000))
-    return redirect(a)
+    r = RandomWords()
+    return redirect(str(r.random_word()))
 
 
 @app.route('/<name>')
@@ -82,7 +81,7 @@ def verify():
     if request.method == 'POST':
         a = find(request.form['name'])
         if a['password'] == request.form['password']:
-            if a['path']:
+            if 'path' in a.keys():
                 return render_template('index.html', name=a['name'], data=a['data'], path=a['path'])
             else:
                 return render_template('index.html', name=a['name'], data=a['data'])
