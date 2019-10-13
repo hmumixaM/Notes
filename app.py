@@ -6,8 +6,9 @@ from flask import *
 from flask import Flask, render_template, session, request, \
     copy_current_request_context
 from flask_socketio import SocketIO, emit, disconnect
-from database import database
+from database import *
 import os
+from werkzeug.utils import secure_filename
 
 
 # Set this variable to "threading", "eventlet" or "gevent" to test the
@@ -33,6 +34,17 @@ def background_thread():
                       namespace='/test')
 
 
+@app.route('/upload/<name>', methods=['POST', 'GET'])
+def upload(name):
+    if request.method == 'POST':
+        f = request.files['file']
+        filename = secure_filename(f.filename)
+        f.save('static/file/'+filename)
+        file_path(name, filename)
+        return redirect('/'+filename)
+    return render_template('file.html', name=name)
+
+
 @app.route('/')
 def index():
     a = str(random.randint(0, 10000))
@@ -41,22 +53,51 @@ def index():
 
 @app.route('/<name>')
 def notepage(name):
-    a = os.listdir("static")
-    if name in a:
-        fo = open("static/html/"+name, "r")
-        data = fo.read()
-        fo.close()
-        return render_template('index.html', name=name, data=data)
+    a = find(name)
+    if a:
+        if a['password']:
+            return render_template('pwd.html', name=name)
+        else:
+            if a['path']:
+                return render_template('index.html', name=a['name'], data=a['data'], path=['path'])
+            else:
+                return render_template('index.html', name=a['name'], data=a['data'])
     else:
         return render_template('index.html', name=name)
+
+
+@app.route('/<name>/file')
+def download(name):
+    ans = find(name)
+    return redirect(url_for('static', filename='file/' + ans['path']))
+
+
+@app.route('/login', methods=['POST'])
+def verify():
+    if request.method == 'POST':
+        a = find(request.form['name'])
+        if a['password'] == request.form['password']:
+            return render_template('index.html', name=a['name'], data=a['data'])
+        else:
+            return redirect('/' + request.form['name'])
+    else:
+        abort(401)
 
 
 @socketio.on('my_event', namespace='/test')
 def test_message(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
-    database(message['data'], message['name'])
+    add(message['name'], message['data'])
     emit('my_response',
          {'data': message['data'], 'count': session['receive_count']})
+
+
+@socketio.on('password', namespace='/test')
+def password(pwds):
+    session['receive_count'] = session.get('receive_count', 0) + 1
+    pwd(pwds['name'], pwds['data'])
+    emit('my_response',
+         {'data': pwds['name'] + " has a password now.", 'count': session['receive_count']})
 
 
 @socketio.on('disconnect_request', namespace='/test')
@@ -66,9 +107,6 @@ def disconnect_request():
         disconnect()
 
     session['receive_count'] = session.get('receive_count', 0) + 1
-    # for this emit we use a callback function
-    # when the callback function is invoked we know that the message has been
-    # received and it is safe to disconnect
     emit('my_response',
          {'data': 'Disconnected!', 'count': session['receive_count']},
          callback=can_disconnect)

@@ -1,26 +1,44 @@
 # -*- coding: utf-8 -*-
+import pymongo
+import time
+import bson.binary
+from io import StringIO
 
-"""
-client = MongoClient("mongodb://root:12345678@34.68.79.134:27017")
-db = client['note']
+
+client = pymongo.MongoClient(host='127.0.0.1', port=27017)
+db = client.note
 collection = db.col
 
-student = {
-    'id': '20170101',
-    'name': 'Jordan',
-    'age': 20,
-    'gender': 'male'
-}
 
-result = collection.insert_one(student)
-print(result)
-"""
+def add(name, data):
+    ans = find(name)
+    if ans:
+        ans['data'] = data
+        ans['time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        objectid = collection.update({'name': name}, ans)
+    else:
+        clust = {'name': name, 'time': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), 'data': data}
+        objectid = collection.insert_one(clust)
+    return objectid
 
-def database(data, name):
-    print("hello")
-    fo = open('static/html/' + name, 'w')
-    fo.write(data)
-    fo.close()
+
+def find(name):
+    return collection.find_one({"name": name})
+
+
+def pwd(name, password):
+    condition = {'name': name}
+    ans = collection.find_one(condition)
+    ans['password'] = password
+    return collection.update(condition, ans)
+
+
+def file_path(name, path):
+    condition = {'name': name}
+    ans = collection.find_one(condition)
+    ans['path'] = path
+    return collection.update(condition, ans)
 
 if __name__ == '__main__':
-    database("hello", 'hello')
+    a = find('hello')
+    print(a)
